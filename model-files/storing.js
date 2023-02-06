@@ -42,22 +42,16 @@ function readModels (){
     const file = readFileSync(modelsDir ,'utf-8');
     return file;
 }
-function newModel(model , userId ){
-    // file = JSON.parse(file)
+
+function newModel(model , userId){
+    var models= readFileSync(modelsDir , 'utf-8');
+    models = JSON.parse(models)
     model.userId = userId;
-    const file = readModels();
-    var add = file
-    
-        add =add.replace(']' , ' ');
-        add +=`,${JSON.stringify(model)}]`
-    // add = JSON.stringify(model)
-    // console.log(add)
-    const updatedFile= writeFileSync(modelsDir  ,add , 'utf-8');
-    // if(!update)
-    return {message : 'Success adding new model' , status : 200}
-    // else 
-    // return {message : 'Success updating model for user '+userId , status : 200}
-    
+    models[userId] = model ;
+    models = JSON.stringify(models)
+    const updatedFile= writeFileSync(modelsDir  ,models , 'utf-8');
+    return {message : 'ADDING MODEL: success adding new model' , status : 200}
+    // return updatedFile;
     
 }
 function updateModel(model , userId ){
@@ -82,9 +76,9 @@ const u = userIdExist(userId);
         {
             const result = modelValidation(model)
             if(result.status ==200){
-                var createModel = newModel(model , userId , false) ;
+                var createModel = newModel(model , userId) ;
                 // createModel = JSON.parse(createModel.result);
-                return model
+                return createModel
             }
             else return result;
            
@@ -118,14 +112,24 @@ function userIdExist(userId) {
 function deleteModel (userId){
     var models = readFileSync(modelsDir , 'utf-8');
     models = JSON.parse(models);
-    const position = binarySearch(models , userId)
-    if(!models[position]) return {message : 'No such a model for this userId' , status : 400};
+   if(models[userId] === null){
+       models.splice(userId , 1);
+       
+       models = JSON.stringify(models)
+       const updatedFile= writeFileSync(modelsDir  ,models , 'utf-8');
+       
+       return {message : 'No model has assigned for this userId' , status : 400};
+} 
+    const position = userId
+    if(!models[position]) return {message : 'No model has assigned for this userId' , status : 400};
+    // if(!models[position])
     else {
         models.splice(position , 1);
         
         models = JSON.stringify(models)
         const updatedFile= writeFileSync(modelsDir  ,models , 'utf-8');
-        return {message : 'DELETING MODEL: success deleting form for userId: '+userId};
+        return {message : 'DELETING MODEL: success deleting form for userId: '+userId , status:200};
+       
     }
 }
 
@@ -135,8 +139,8 @@ function binarySearch(sortedArray, key){
 
     while (start <= end) {
         let middle = Math.floor((start + end) / 2);
-
-        if (sortedArray[middle].userId === key) {
+      
+         if (sortedArray[middle].userId === key) {
             // found the key
             return middle;
         } else if (sortedArray[middle].userId < key) {
@@ -156,5 +160,6 @@ function binarySearch(sortedArray, key){
 module.exports =  {
     allModelsAdmin : viewAllModels,
     modelize : addModel,
-    deleteModel
+    deleteModel,
+    
 }
