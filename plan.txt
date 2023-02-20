@@ -1,0 +1,20 @@
+ 2/2/2023
+MDB plan 
+
+applied Algorithms : 
+BST,Recursion
+------------------
+functions and features : 
+
+1. DB models : 
+-we need to validate the passed model to make sure that it meets the standards (validation)
+-after validation we need to save the models associated
+ with the user Id in models.json (storing)
+important note : 
+user ID must be sorted and auto generated this
+ is important because we need to apply binary search in the future. 
+--------------------
+Done : 
+1.1 model Validation. 
+under development : 
+1.2 model Storing
